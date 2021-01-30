@@ -22,6 +22,13 @@ class UserRegisterForm(UserCreationForm):
             'password2': forms.PasswordInput(attrs={"class": "form-control"}),
         }
 
+    def clean_password2(self):
+        """Валидация индентичности двух паролей"""
+        form_data = self.cleaned_data
+        if form_data['password1'] != form_data['password2']:
+            raise forms.ValidationError('Пароли не совпадают')
+        return form_data['password2']
+
 
 class UserLoginForm(AuthenticationForm):
     username = forms.CharField(label='Имя пользователя', widget=forms.TextInput(attrs={"class": "form-control"}))
@@ -46,10 +53,25 @@ class SearchForm(forms.Form):
 
 
 class PasswordChangeFormUser(PasswordChangeForm):
-    old_password = forms.CharField(label='Новый пароль', widget=forms.PasswordInput(attrs={"class": "form-control"}),
+    old_password = forms.CharField(label='Старый пароль', widget=forms.PasswordInput(attrs={"class": "form-control"}),
                                    help_text='Введите текущий пароль')
-    new_password1 = forms.CharField(label='Старый пароль', widget=forms.PasswordInput(attrs={"class": "form-control"}),
+    new_password1 = forms.CharField(label='Новый пароль', widget=forms.PasswordInput(attrs={"class": "form-control"}),
                                     help_text='Введите новый пароль')
-    new_password2 = forms.CharField(label='Старый пароль', widget=forms.PasswordInput(attrs={"class": "form-control"}),
+    new_password2 = forms.CharField(label='Новый пароль', widget=forms.PasswordInput(attrs={"class": "form-control"}),
                                     help_text='Введите снова новый пароль')
 
+
+class UserEditForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name', 'email')
+
+
+class ProfileEditForm(forms.ModelForm):
+
+    class Meta:
+        model = Profile
+        fields = ('date_of_birth', 'photo')
+        widgets = {
+            'date_of_birth': forms.TextInput(attrs={"class": "form-control"}),
+        }

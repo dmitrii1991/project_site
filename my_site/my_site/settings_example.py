@@ -67,7 +67,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join(BASE_DIR, 'templates'),
+            os.path.join(BASE_DIR, '../templates'),
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -136,15 +136,15 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')  # создаст папку в корне и поместит тут статику
+STATIC_ROOT = os.path.join(BASE_DIR, '../static')  # создаст папку в корне и поместит тут статику
 STATICFILES_DIRS = [  # пути поиска дополнительной статики
-    os.path.join(BASE_DIR, 'my_site', 'static'),
+    os.path.join(BASE_DIR, '', 'static'),
 ]
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # пути сохранения медиафайлов
 MEDIA_URL = '/media/'
 
-MUSIC_ROOT = os.path.join(BASE_DIR, 'english', 'music')
+MUSIC_ROOT = os.path.join(BASE_DIR, '../english', 'music')
 MUSIC_URL = '/english/music/'
 
 INTERNAL_IPS = [

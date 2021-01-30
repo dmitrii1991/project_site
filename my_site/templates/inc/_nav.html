@@ -37,6 +37,9 @@
           <a class="btn btn-primary"href="{% url 'general_logic:password_change' %}" role="button">
              Сменить пароль
           </a>
+          <a class="btn btn-primary"href="{% url 'general_logic:edit' %}" role="button">
+             Профиль
+          </a>
         {% else %}
           <a class="btn btn-primary" href="{% url 'general_logic:register' %}" role="button">
              Зарегистрироваться

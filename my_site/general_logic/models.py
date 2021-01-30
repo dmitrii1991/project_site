@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.urls import reverse
 from django.contrib.auth.models import User
+from django.conf import settings
 
 from taggit.managers import TaggableManager
 
@@ -66,6 +67,17 @@ class Comment(models.Model):
         return 'Comment by {} on {}'.format(self.name, self.post)
 
 
+class Profile(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    date_of_birth = models.DateField(blank=True, null=True, verbose_name='Дата Рождения')
+    photo = models.ImageField(upload_to='users/%Y/%m/%d/', blank=True, verbose_name='Фотография')
+
+    class Meta:
+        verbose_name = 'Профиль'
+        verbose_name_plural = 'Профили'
+
+    def __str__(self):
+        return 'Профиль польхователя: {}'.format(self.user.username)
 
 
 

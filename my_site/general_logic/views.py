@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.contrib.auth import login, logout
@@ -6,13 +7,16 @@ from django.core.mail import send_mail
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponse
 from django.db.models import Count
+from django.urls import reverse_lazy
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
-from django.contrib.auth.views import PasswordChangeView, PasswordChangeDoneView
+from django.contrib.auth.views import PasswordChangeView, PasswordChangeDoneView, PasswordResetView, \
+    PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
+from django.contrib.auth.backends import ModelBackend as BaseBackend
 
 from taggit.models import Tag
 
-from .forms import UserRegisterForm, UserLoginForm, EmailPostForm, CommentForm, SearchForm, PasswordChangeFormUser
-from .models import Post, Comment
+from .forms import *
+from .models import *
 
 
 class PostListView(ListView):
@@ -81,7 +85,7 @@ def post_list(request, tag_slug=None):
 
 
 def post_share(request, post_id):
-    post = get_object_or_404(Post, id=post_id,status='published')
+    post = get_object_or_404(Post, id=post_id, status='published')
     sent = False
     if request.method == 'POST':
         form = EmailPostForm(request.POST)
@@ -120,9 +124,10 @@ def register(request):
         form = UserRegisterForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)  # для автоматической авторизации
-            messages.success(request, 'Вы успешно зарегистрировалась')
-            return redirect('home')
+            Profile.objects.create(user=user)            # автоматическое создание профиля
+            login(request, user, backend='general_logic.authentication.EmailAuthBackend')                         # для автоматической авторизации
+            messages.success(request, 'Вы успешно зарегистрировались')
+            return redirect('general_logic:home')
         else:
             messages.error(request, 'ошибка регистрации')
     else:
@@ -142,7 +147,7 @@ def user_login(request):
         form = UserLoginForm(data=request.POST)
         if form.is_valid():
             user = form.get_user()
-            login(request, user)
+            login(request, user, backend='general_logic.authentication.EmailAuthBackend')
             return redirect('general_logic:home')
     else:
         form = UserLoginForm()
@@ -152,6 +157,32 @@ def user_login(request):
 class PasswordChangeViewTitle(PasswordChangeView):
     form_class = PasswordChangeFormUser
     template_name = 'general_logic/password_change_form.html'
+    success_url = reverse_lazy('general_logic:password_change_done')
 
 
+class PasswordChangeDoneViewTitle(PasswordChangeDoneView):
+    template_name = 'general_logic/password_change_done.html'
 
+
+class PasswordResetViewTitle(PasswordResetView):
+    email_template_name = 'general_logic/password_reset_ email.html'
+    template_name = 'general_logic/password_reset_form.html'
+    success_url = reverse_lazy('general_logic:password_reset_done')
+
+
+@login_required
+def edit_profile(request):
+    # todo для отладки
+    Profile.objects.get_or_create(user=request.user)
+
+    if request.method == 'POST':
+        form = UserEditForm(instance=request.user, data=request.POST)
+        profile_form = ProfileEditForm(instance=request.user.profile,
+                                       files=request.FILES)
+        if form.is_valid() and profile_form.is_valid():
+            form.save()
+            profile_form.save()
+    else:
+        form = UserEditForm(instance=request.user)
+        profile_form = ProfileEditForm(instance=request.user.profile)
+    return render(request, 'general_logic/edit.html', {'user_form': form, 'profile_form': profile_form})

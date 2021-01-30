@@ -1,6 +1,5 @@
 from django.urls import path
-from django.views.decorators.cache import cache_page  # кэш 51 видео
-from django.contrib.auth.views import PasswordChangeView, PasswordChangeDoneView
+from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
 
 from .views import *
 
@@ -20,5 +19,10 @@ urlpatterns = [
     path('logout/', user_logout, name='logout'),
     path('login/', user_login, name='login'),
     path('password_change/', PasswordChangeViewTitle.as_view(), name='password_change'),
-    path('password_change/done/', PasswordChangeDoneView.as_view(), name='password_change_done'),
+    path('password_change/done/', PasswordChangeDoneViewTitle.as_view(), name='password_change_done'),
+    path('password_reset/', PasswordResetViewTitle.as_view(), name='password_reset'),
+    path('password_reset/done/', PasswordResetDoneView.as_view(), name='password_reset_done'),
+    path('reset/<uidb64>/<token>/', PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    path('reset/done/', PasswordResetCompleteView.as_view(), name='password_reset_complete'),
+    path('edit/', edit_profile, name='edit'),
 ]

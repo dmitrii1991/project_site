@@ -17,7 +17,8 @@ urlpatterns = [
     path('english/', include('english.urls', namespace='english')),
 
     path('__debug__/', include(debug_toolbar.urls)),
-    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap')
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
+    path('social-auth/', include('social_django.urls', namespace='social')),
 ]
 
 # Это сделано специально, стобы тестовый сервер мог отрабатывать фотки. На продакшнене этим займется реальный вебсервер
