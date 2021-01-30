@@ -1,0 +1,17 @@
+.mp3
+.pyc
+.xlsx
+.csv
+.json
+.pytest_cache
+
+.idea
+/my_site/static/
+my_site/english/migrations/*
+my_site/general_logic/migrations/*
+__pycache__
+venv
+
+test.py
+db.sqlite3
+settings.py

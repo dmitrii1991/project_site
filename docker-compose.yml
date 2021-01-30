@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  database:
+    image: postgres
+    restart: always
+    command: "postgres -c max_connections=200"
+    environment:
+      - POSTGRES_USER=fssp
+      - POSTGRES_PASSWORD=923434
+      - POSTGRES_DB=fssp
+      - POSTGRES_HOST=database
+    volumes:
+      - database_p:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    logging:
+      options:
+        max-size: "10mb"
+
+
+volumes:
+  database_p:
+  logs:
+  middle:
+  result:
+  task:

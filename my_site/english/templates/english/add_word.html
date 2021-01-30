@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Добавление слова :: {{ block.super }}
+{% endblock %}
+
+
+{% block content %}
+
+<h1>Добавление слова</h1>
+
+<form action="{% url 'english:add_word' %}" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <button type="submit" class="btn btn-primary btn-block">Добавить новость</button>
+</form>
+
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load general_tags %}
+{% block title %}{{ post.title }}{% endblock %}
+{% block content %}
+
+<h1>{{ post.title }}</h1>
+<p class="date">Published {{ post.publish }} by {{ post.author }}</p>
+{{ post.body|markdown }}
+
+{% with comments.count as total_comments %}
+<h2>{{ total_comments }} comment{{ total_comments|pluralize }}</h2>
+{% endwith %}
+
+{% for comment in comments %}
+<div class="card-header">
+    <p class="info">
+    Comment {{ forloop.counter }} by {{ comment.name }}
+    {{ comment.created }}
+    </p>
+    {{ comment.body|linebreaks }}
+</div>
+{% empty %}
+<p>There are no comments yet.</p>
+{% endfor %}
+
+{% if new_comment %}
+    <h2>Добавьте свой коментарий</h2>
+{% else %}
+    <h2>Добавьте свой коментарий</h2>
+    <form action="." method="post">
+    {{ comment_form.as_p }}
+    {% csrf_token %}
+    <p><input type="submit" value="Остановить комментарий" class="btn btn-secondary"></p>
+    </form>
+{% endif %}
+
+{% endblock %}
