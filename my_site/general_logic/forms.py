@@ -42,10 +42,14 @@ class EmailPostForm(forms.Form):
     comments = forms.CharField(required=False, widget=forms.Textarea(attrs={"class": "form-control"}), label='Текст')
 
 
-class CommentForm(forms.Form):
+class CommentForm(forms.ModelForm):
     name = forms.CharField(max_length=25, label='Имя пользователя', widget=forms.TextInput(attrs={"class": "form-control"}))
     email = forms.EmailField(label='Email от кого', widget=forms.EmailInput(attrs={"class": "form-control"}))
     body = forms.CharField(required=False, widget=forms.Textarea(attrs={"class": "form-control"}), label='Текст')
+
+    class Meta:
+        model = Comment
+        fields = ('name', 'email', 'body')
 
 
 class SearchForm(forms.Form):

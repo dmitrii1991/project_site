@@ -2,9 +2,10 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.contrib.auth import login, logout
-from django.views.generic import ListView, DetailView, CreateView
+from django.views.generic import ListView, DetailView, CreateView, View
 from django.core.mail import send_mail
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.http import HttpResponse
 from django.db.models import Count
 from django.urls import reverse_lazy
@@ -12,6 +13,7 @@ from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 from django.contrib.auth.views import PasswordChangeView, PasswordChangeDoneView, PasswordResetView, \
     PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
 from django.contrib.auth.backends import ModelBackend as BaseBackend
+
 
 from taggit.models import Tag
 
@@ -24,6 +26,50 @@ class PostListView(ListView):
     context_object_name = 'posts'
     paginate_by = 2
     template_name = 'general_logic/index.html'
+
+
+
+class PostDetail(View):
+    model = Post
+    template_name = 'general_logic/detail.html'
+
+    def get(self, request, year, month, day, post) -> HttpResponse:
+        """Детальное отображение статьи
+
+        :param request:
+        :param year: год
+        :param month: месяц
+        :param day: день
+        :param post: имя поста
+        :return:
+            HttpResponse
+        """
+        post = get_object_or_404(Post,
+                                 slug=post,
+                                 status='published',
+                                 publish__year=year,
+                                 publish__month=month,
+                                 publish__day=day)
+        comments = post.comments.filter(active=True)
+        new_comment = None
+        if request.method == 'POST':
+            comment_form = CommentForm(data=request.POST)
+            if comment_form.is_valid():
+                #  Создаем комментарий, не сохраняя в БД для привязке к текущей статье
+                new_comment = comment_form.save(commit=False)
+                new_comment.post = post
+                new_comment.save()
+        else:
+            comment_form = CommentForm()
+        return render(
+            request,
+            'general_logic/detail.html',
+            {
+                'post': post,
+                'comments': comments,
+                'new_comment': new_comment,
+                'comment_form': comment_form,
+            })
 
 
 def post_detail(request, year, month, day, post) -> HttpResponse:

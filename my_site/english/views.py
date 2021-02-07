@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 
@@ -45,7 +46,7 @@ class WordsByCategory(ListView):
         return Word.objects.filter(category_id=self.kwargs['category_id']).select_related('category')
 
 
-class CreateWord(CreateView):
+class CreateWord(LoginRequiredMixin, CreateView):
     form_class = WordForm
     template_name = 'english/add_word.html'
     success_url = reverse_lazy('english:english_title')
